@@ -35,11 +35,105 @@ import fetch from "isomorphic-fetch"
 
 import DOM from 'react-dom'
 import React, {Component} from 'react'
+import Backbone from 'backbone'
+
 
 function app() {
-    // start app
-    // new Router()
-    DOM.render(<p>test 2</p>, document.querySelector('.container'))
+	// --------------------- Model/Collection --------------------- //
+	var GuestModel = Backbone.Model.extend ({
+		initialize: function(newName) {
+			this.set({name: newName})
+		},
+
+		defaults: {
+			partySize: 1
+		}
+
+	})
+
+	var GuestCollection = Backbone.Collection.extend ({
+		model: GuestModel
+	})
+
+	// --------------------- Views --------------------- //
+
+	var ResView = React.createClass ({
+		_addGuest: function(name){
+			this.state.guestColl.add(new GuestModel(name))
+			this.setState({
+				guestColl: this.state.guestColl
+			})
+		},
+
+		getInitialState: function() {
+			return {
+				guestColl: this.props.guestColl
+			}
+		},
+
+		render: function() {
+			return (
+				<div createClass="pgContainer">
+					<GuestAdder adderFunc={this._addGuest}/>
+					<GuestList guestColl={this.state.guestColl}/>
+				</div>
+				)
+		}
+	})
+
+	var GuestAdder = React.createClass ({
+		_handleKeyDown: function(e) {
+			if (e.KeyCode === 13) {
+				var requestName = e.target.value
+				this.props.adderFunc(guestName)
+			}
+		},
+
+		render: function() {
+			return <input adderFunc={this._addGuest} />
+		}
+	})
+
+    var GuestList = React.createClass({
+        _makeGuest: function(model) {
+            return <Guest guestModel={model} />
+        },
+
+        render: function() {
+            return (
+                <div className="guestList">
+                    {this.props.guestColl.map(this._makeGuest)}
+                </div>
+                )
+        }
+    })
+
+    var Guest = React.createClass({
+        render: function() {
+            return <p>{this.props.guestModel.get('name')}</p>
+        }
+    })
+
+	// --------------------- Router --------------------- //
+
+	var Router = Backbone.Router.extend ({
+		routes: {
+			"*default" : "home"
+		},
+
+		home: function() {
+			window.location.hash = "home"
+			DOM.render(<ResView guestColl={new GuestCollection()}/>, document.querySelector('.container'))
+		},
+
+		initialize: function() {
+			Backbone.history.start()
+		}
+
+	})
+
+	var rtr = new Router()
+
 }
 
 app()
