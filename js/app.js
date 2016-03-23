@@ -57,42 +57,49 @@ function app() {
 
 	// --------------------- Views --------------------- //
 
-	var ResView = React.createClass ({
-		_addGuest: function(name){
-			this.state.guestColl.add(new GuestModel(name))
-			this.setState({
-				guestColl: this.state.guestColl
-			})
-		},
+    var ResView = React.createClass({
+    	// gets name passed in from _handleKeyDown function below
+    	// add new instance of model with name to collection
+    	// guest coll was put on state
+        _addGuest: function(name) {
+            this.state.guestColl.add(new GuestModel(name))
+            this.setState({
+                guestColl: this.state.guestColl
+            })
+        },
 
-		getInitialState: function() {
-			return {
-				guestColl: this.props.guestColl
-			}
-		},
+        // guest collection is on props, but moved to state above
+        getInitialState: function() {
+            return {
+                guestColl: this.props.guestColl
+            }
+        },
 
-		render: function() {
-			return (
-				<div createClass="pgContainer">
-					<GuestAdder adderFunc={this._addGuest}/>
-					<GuestList guestColl={this.state.guestColl}/>
-				</div>
-				)
-		}
-	})
+        // put guestCollection on state
+        render: function() {
+            return (
+                <div className="partyView">
+                    <GuestAdder adderFunc={this._addGuest}/>
+                    <GuestList guestColl={this.state.guestColl}/>
+                </div>  
+                )
+        }
+    })
 
-	var GuestAdder = React.createClass ({
-		_handleKeyDown: function(e) {
-			if (e.KeyCode === 13) {
-				var requestName = e.target.value
-				this.props.adderFunc(guestName)
-			}
-		},
-
-		render: function() {
-			return <input adderFunc={this._addGuest} />
-		}
-	})
+ 	var GuestAdder = React.createClass({
+ 		// captures guest name at input
+        _handleKeyDown: function(keyEvent) {
+            if (keyEvent.keyCode === 13) {
+                var guestName = keyEvent.target.value
+                this.props.adderFunc(guestName)
+                keyEvent.target.value = ''
+            }
+        },
+        // input runs _handleKeyDown, above 
+        render: function() {
+            return <input onKeyDown={this._handleKeyDown} />
+        }
+    })
 
     var GuestList = React.createClass({
         _makeGuest: function(model) {
@@ -117,10 +124,12 @@ function app() {
 	// --------------------- Router --------------------- //
 
 	var Router = Backbone.Router.extend ({
+		// one default route, home
 		routes: {
 			"*default" : "home"
 		},
 
+		// home function places instance of the GuestCollection on the view, ResView
 		home: function() {
 			window.location.hash = "home"
 			DOM.render(<ResView guestColl={new GuestCollection()}/>, document.querySelector('.container'))
