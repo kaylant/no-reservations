@@ -97,6 +97,7 @@ function app() {
 
             return (
                 <div className="listView">
+                    <h1>To-Do List</h1>
                     <div className="buttons">{this._genbuttons()}</div>
                     <ItemAdder adderFunc={this._addItem}/>
                     <ToDoList updater={this._updater} listColl={listColl} remover={this._removeItem}/>
@@ -155,12 +156,12 @@ function app() {
                         <p>{this.props.listModel.get('item')}</p>
                         <p>{this.props.listModel.get('status')}</p>
                         <select onChange={this._selectStatus} >
-                            <option value="">change rsvp</option>
+                            <option value="">change status</option>
                             <option value="pending">pending</option>
                             <option value="undone">undone</option>
                             <option value="done">done</option>
                         </select>
-                        <button onClick={this._clickHandler}>x</button>
+                        <button className="delete" onClick={this._clickHandler}>x</button>
                     </div>
         }
     })
