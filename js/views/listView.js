@@ -1,17 +1,28 @@
 import React, {Component} from 'react'
+import ItemAdder from './itemAdder'
+import ToDoList from './toDoList'
 
 var ListView = React.createClass({
+
+    componentWillMount: function() {
+        var self = this
+        this.props.listColl.on('sync', function(){self.forceUpdate()})
+    },
+
     // gets item passed in from _handleKeyDown function below
     // add new instance of model with item to collection
     // list coll was put on state
     _addItem: function(item) {
+        console.log("adding item")
+        console.log(item)
+        console.log(this.state.listColl.models)
         this.state.listColl.add(item)
         this._updater()
     },
 
-    _genbuttons: function(i) {
+    _genbuttons: function() {
         var butts = ["pending","undone","done","all"].map(function(itemStatus){
-            return <button onClick={this._filterView} key={i} value={itemStatus}>{itemStatus}</button>
+            return <button onClick={this._filterView} value={itemStatus}>{itemStatus}</button>
         }.bind(this))
         return butts
     },
@@ -23,20 +34,15 @@ var ListView = React.createClass({
         })
     },
 
-    _removeItem: function(model) {
-        this.state.listColl.remove(model)
-        this._updater()
-    },
-
     _updater: function() {
         this.setState({
             listColl: this.state.listColl
         })
     },
 
-    componentWillMount: function() {
-        var self = this
-        this.props.listColl.on('sync', function(){self.forceUpdate()})
+    _removeItem: function(model) {
+        this.state.listColl.remove(model)
+        this._updater()
     },
 
     // list collection is on props, but moved to state above
@@ -58,7 +64,7 @@ var ListView = React.createClass({
             <div className="listView">
                 <h1>To-Do List</h1>
                 <div className="buttons">{this._genbuttons()}</div>
-                <ItemAdder adderFunc={this._addItem}/>
+                <ItemAdder adderFunc={this._addItem} />
                 <ToDoList updater={this._updater} listColl={listColl} remover={this._removeItem}/>
             </div>  
             )

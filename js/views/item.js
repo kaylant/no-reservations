@@ -1,4 +1,6 @@
 import React, {Component} from 'react'
+import ToDoList from './toDoList'
+import ItemAdder from './itemAdder'
 
 var Item = React.createClass({
 

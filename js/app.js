@@ -26,8 +26,8 @@ import React, {Component} from 'react'
 import Backbone from 'bbfire'
 
 import UserModel from './models/userModel'
-import ListModel from './models/listModel'
 import ListCollection from './models/listCollection'
+import ListModel from './models/listModel'
 
 import SignInView from './views/signIn'
 import ListView from './views/listView'
@@ -66,7 +66,6 @@ function app() {
 	        DOM.render(<ListView listColl={lc}/>,document.querySelector('.container'))
 	    },
 
-	    // home function places instance of the listCollection on the view, ListView
 	    initialize: function() {
 	        Backbone.history.start()
 	    }
