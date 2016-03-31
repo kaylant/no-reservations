@@ -10,9 +10,10 @@ var ToDoList = React.createClass({
 
     render: function() {
         // console.log(this)
+        var coll = this.props.listColl.filter(function(mod){return mod.get('task') !== undefined})
         return (
             <div className="itemList">
-                {this.props.listColl.map(this._makeItem)}
+                {coll.map(this._makeItem)}
             </div>
             )
     }

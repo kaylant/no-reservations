@@ -11,12 +11,14 @@ var Item = React.createClass({
     },
 
     _clickHandler: function() {
+        console.log(this.props.listModel)
         this.props.remover(this.props.listModel)
+        console.log('do we read this line?')
     },
 
     render: function() {
         return <div className="item">
-                    <p>{this.props.listModel.get('item')}</p>
+                    <p>{this.props.listModel.get('task')}</p>
                     <p>{this.props.listModel.get('status')}</p>
                     <select onChange={this._selectStatus} >
                         <option value="">change status</option>

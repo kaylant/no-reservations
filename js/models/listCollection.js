@@ -8,6 +8,10 @@ var ListCollection = Backbone.Firebase.Collection.extend({
     model: ListModel,
     initialize: function(username) {
         this.url = `https://no-reservations.firebaseio.com/users/${username}/tasks`
+    },
+    parse: function(rawData) {
+    	console.log(rawData)
+    	return rawData
     }
 })
 

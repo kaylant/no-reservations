@@ -23,6 +23,7 @@ import fetch from "isomorphic-fetch"
 
 import DOM from 'react-dom'
 import React, {Component} from 'react'
+import Firebase from 'firebase'
 import Backbone from 'bbfire'
 
 import UserModel from './models/userModel'
@@ -62,6 +63,7 @@ function app() {
 	    home: function() {
 	        if (typeof localStorage.todoUsername !== 'string') {location.hash = "login"}
 	        var lc = new ListCollection(localStorage.todoUsername)
+	    	console.log(lc)
 	        //var intervalID = setInterval(lc.fetch.bind(lc),1500)
 	        DOM.render(<ListView listColl={lc}/>,document.querySelector('.container'))
 	    },

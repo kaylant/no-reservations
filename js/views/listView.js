@@ -12,17 +12,17 @@ var ListView = React.createClass({
     // gets item passed in from _handleKeyDown function below
     // add new instance of model with item to collection
     // list coll was put on state
-    _addItem: function(item) {
+    _addItem: function(taskText) {
         console.log("adding item")
-        console.log(item)
+        console.log(taskText)
         console.log(this.state.listColl.models)
-        this.state.listColl.add(item)
+        this.state.listColl.add({task:taskText})
         this._updater()
     },
 
     _genbuttons: function() {
-        var butts = ["pending","undone","done","all"].map(function(itemStatus){
-            return <button onClick={this._filterView} value={itemStatus}>{itemStatus}</button>
+        var butts = ["pending","undone","done","all"].map(function(itemStatus,i){
+            return <button onClick={this._filterView} key={i} value={itemStatus}>{itemStatus}</button>
         }.bind(this))
         return butts
     },
@@ -35,6 +35,7 @@ var ListView = React.createClass({
     },
 
     _updater: function() {
+        console.log("updater running")
         this.setState({
             listColl: this.state.listColl
         })
