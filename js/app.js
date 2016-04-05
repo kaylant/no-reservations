@@ -26,44 +26,100 @@ import React, {Component} from 'react'
 import Firebase from 'firebase'
 import Backbone from 'bbfire'
 
-import UserModel from './models/userModel'
-import ListCollection from './models/listCollection'
-import ListModel from './models/listModel'
-
 import SignInView from './views/signIn'
 import ListView from './views/listView'
 import ItemAdder from './views/itemAdder'
 import ToDoList from './views/toDoList'
 import Item from './views/item'
 
+
+
 function app() {
+
+	//------------ Models ------------//
+
+	// set up model for user of the to-do list app
+	// the username default is null because it is overwritten by SignInView
+	var UserModel = Backbone.Model.extend({
+	    defaults: {
+	        username: null
+	    },
+
+	    // this url requries .json because the persistance data is returned in this format
+	    url: function() {
+	        return `https://no-reservations.firebaseio.com/users/${this.get('username').json}`
+	    }
+	})
+
+	// default view on the model is that a task is false or "un-done"
+	var ListModel = Backbone.Model.extend({
+	    defaults: {
+	        status: "pending"
+	    }
+	})
+
+	// put the initialize method on collection
+	// initialize is passed in a username from below
+	var ListCollection = Backbone.Firebase.Collection.extend({
+	    model: ListModel,
+	    initialize: function(username) {
+	        this.url = `https://no-reservations.firebaseio.com/users/${username}/tasks`
+	    },
+	    parse: function(rawData) {
+	    	// console.log(rawData)
+	    	return rawData
+	    }
+	})
+
+	//------------ Sign-In View ------------//
+
+	// captures value in input bar where user signs into the to-do-list
+	var SignInView = React.createClass ({
+	    _submitUsername: function(evt) {
+	        if (evt.keyCode === 13) {
+	            var username = evt.target.value
+	            this.props.handleUserSubmit(username)
+	        }
+	    },
+
+	    render: function() {
+	        return (
+	            <div className="signinContainer">
+	                <input onKeyDown={this._submitUsername} name="username" />
+	            </div>
+	            )
+	    }
+	})
+
+	//------------ Router ------------//
 
 	var Router = Backbone.Router.extend({
 	    routes: {
-	        "todo": "home",
-	        "*default": "showLogin"
+	        "*todo": "home",
+	        "default": "showLogin"
 	    },
 
 	    handleUserSubmit: function(username) { 
+	    	console.log('running handle submit')
 	        localStorage.todoUsername = username
 	        var userModel = new UserModel({username: username}) 
 	        userModel.fetch().then(function(resp){
 	            if (resp !== null) { 
-	                location.hash = "todo"
+	                window.location.hash = "todo"
 	            }
 	        })
 	    },
 	    
 	    showLogin: function() { 
-	        location.hash = "login"
+	        window.location.hash = "login"
 	        var boundSubmitter = this.handleUserSubmit.bind(this)
 	        DOM.render(<SignInView handleUserSubmit={boundSubmitter}/>, document.querySelector('.container')) 
 	    },
 
 	    home: function() {
-	        if (typeof localStorage.todoUsername !== 'string') {location.hash = "login"}
+	        if (typeof localStorage.todoUsername !== 'string') {window.location.hash = "login"}
 	        var lc = new ListCollection(localStorage.todoUsername)
-	    	console.log(lc)
+	    	//console.log(lc)
 	        //var intervalID = setInterval(lc.fetch.bind(lc),1500)
 	        DOM.render(<ListView listColl={lc}/>,document.querySelector('.container'))
 	    },
